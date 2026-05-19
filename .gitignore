@@ -15,6 +15,16 @@ venv/
 backfill_all.log
 scrape_backfill.log
 
+# YouTube transcripts — Phase 1 development, do not push to public corpus
+# yet. Remove this line when Phase 3 (chat-app cutover) is ready. See
+# youtube-transcripts-spec.md.
+amherst/transcripts/
+
 # OS junk
 .DS_Store
 Thumbs.db
+.~lock.*#
+
+# Personal workspace — kanban, learnings, drafts, fundraising, skills, etc.
+# Everything inside is intentionally outside the public corpus repo.
+_workspace/
