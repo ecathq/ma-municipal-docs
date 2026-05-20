@@ -2,8 +2,6 @@
 
 Markdown archive of Amherst, MA municipal meeting records — minutes, votes, agendas, and executive-session minutes — scraped daily from amherstma.gov to power a civic chat tool for Amherst residents.
 
-**Temporarily private while workspace restructure is in progress.**
-
 ## What's inside
 amherst/
 ├── minutes/                     Approved Town Council Minutes
