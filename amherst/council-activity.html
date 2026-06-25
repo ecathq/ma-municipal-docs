@@ -1,0 +1,118 @@
+<!DOCTYPE html>
+<html lang="en"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Amherst Town Council — Activity by Year</title>
+<style>
+:root{
+  --bg:#f5f6f8;--card:#fff;--ink:#1f2430;--muted:#6b7280;--line:#e6e8ec;
+  --accent:#2563eb;--accent2:#7c3aed;--warm:#d97706;
+  --shadow:0 1px 2px rgba(16,24,40,.04),0 4px 16px rgba(16,24,40,.06);
+}
+*{box-sizing:border-box}
+body{margin:0;background:var(--bg);color:var(--ink);
+  font:15px/1.55 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,sans-serif}
+.wrap{max-width:1000px;margin:0 auto;padding:28px 22px 60px}
+header h1{font-size:23px;margin:0 0 4px;letter-spacing:-.01em}
+header p{color:var(--muted);font-size:14px;margin:0 0 22px;max-width:760px}
+.cards{display:grid;grid-template-columns:repeat(4,1fr);gap:12px;margin-bottom:22px}
+.metric{background:var(--card);border:1px solid var(--line);border-radius:14px;box-shadow:var(--shadow);padding:15px 16px}
+.metric .n{font-size:25px;font-weight:700;line-height:1.1}
+.metric .l{color:var(--muted);font-size:12px;font-weight:600;margin-top:4px}
+.metric .s{color:var(--muted);font-size:11px;margin-top:2px}
+.metric.a .n{color:var(--accent)}.metric.b .n{color:var(--accent2)}.metric.c .n{color:var(--warm)}
+.panel{background:var(--card);border:1px solid var(--line);border-radius:16px;box-shadow:var(--shadow);
+  padding:20px 22px;margin-bottom:20px}
+.panel h2{font-size:15px;margin:0 0 3px}.panel .hint{color:var(--muted);font-size:13px;margin:0 0 16px}
+svg{width:100%;height:auto;display:block;overflow:visible}
+.tablewrap{overflow:auto;border:1px solid var(--line);border-radius:12px}
+table{width:100%;border-collapse:collapse;font-size:14px}
+th,td{text-align:left;padding:10px 13px;border-bottom:1px solid var(--line);white-space:nowrap}
+th{background:#fafbfc;color:var(--muted);font-size:12px;font-weight:600}
+td.num{text-align:right;font-variant-numeric:tabular-nums}
+tr:last-child td{border-bottom:none}
+.topictag{display:inline-block;background:#eaf0fe;color:var(--accent);border-radius:6px;
+  padding:1px 7px;font-size:11px;font-weight:600;margin-right:4px}
+.part{color:var(--warm);font-size:11px;font-weight:700;margin-left:4px}
+footer{color:var(--muted);font-size:12px;margin-top:8px;line-height:1.6}
+@media(max-width:760px){.cards{grid-template-columns:repeat(2,1fr)}}
+</style></head><body>
+<div class="wrap">
+<header>
+  <h1>Amherst Town Council — Activity by Year</h1>
+  <p>How much the council took up each year, and how often it split. Counts cover formal motions in the Unofficial Record of Votes; 2026 is a partial year (records through mid-2026).</p>
+</header>
+
+<div class="cards" id="cards"></div>
+
+<div class="panel">
+  <h2>Motions voted on per year</h2>
+  <p class="hint">A “motion” is one formal vote — adopting an order, making an appointment, amending a bylaw, and so on. Taller bars mean a busier council.</p>
+  <div id="motionsChart"></div>
+</div>
+
+<div class="panel">
+  <h2>How often the council split</h2>
+  <p class="hint">Share of each year's motions that were <b>contested</b> — i.e. not unanimous (at least one No or abstention). Higher means more disagreement, independent of how much they voted on.</p>
+  <div id="contestedChart"></div>
+</div>
+
+<div class="panel">
+  <h2>Year by year</h2>
+  <p class="hint">Meetings counts distinct meeting dates with a recorded vote. “Per meeting” is motions ÷ meetings.</p>
+  <div class="tablewrap"><table>
+    <thead><tr><th>Year</th><th class="num">Meetings</th><th class="num">Motions</th><th class="num">Per meeting</th><th class="num">Contested</th><th class="num">Contested %</th><th>Most-voted topics</th></tr></thead>
+    <tbody id="rows"></tbody></table></div>
+</div>
+
+<footer id="foot"></footer>
+</div>
+
+<script>
+const DATA = {"2019":{"motions":167,"meetings":16,"per_meeting":10.4,"contested":62,"contested_pct":37,"top_topics":["appointments","budget-appropriation","rules-procedure"]},"2020":{"motions":337,"meetings":28,"per_meeting":12.0,"contested":99,"contested_pct":29,"top_topics":["appointments","rules-procedure","budget-appropriation"]},"2021":{"motions":377,"meetings":30,"per_meeting":12.6,"contested":109,"contested_pct":29,"top_topics":["rules-procedure","appointments","resolution"]},"2022":{"motions":263,"meetings":28,"per_meeting":9.4,"contested":91,"contested_pct":35,"top_topics":["appointments","budget-appropriation","resolution"]},"2023":{"motions":166,"meetings":25,"per_meeting":6.6,"contested":51,"contested_pct":31,"top_topics":["budget-appropriation","appointments","resolution"]},"2024":{"motions":152,"meetings":19,"per_meeting":8.0,"contested":73,"contested_pct":48,"top_topics":["appointments","schools","resolution"]},"2025":{"motions":192,"meetings":23,"per_meeting":8.3,"contested":78,"contested_pct":41,"top_topics":["budget-appropriation","appointments","schools"]},"2026":{"motions":97,"meetings":13,"per_meeting":7.5,"contested":30,"contested_pct":31,"top_topics":["budget-appropriation","appointments","resolution"]}};
+const PARTIAL="2026";
+const years=Object.keys(DATA).sort();
+const pretty=t=>t.replace(/-/g,' ').replace(/\b\w/g,m=>m.toUpperCase());
+
+// headline cards
+const totalMotions=years.reduce((a,y)=>a+DATA[y].motions,0);
+const busiest=years.reduce((a,y)=>DATA[y].motions>DATA[a].motions?y:a);
+const divisive=years.reduce((a,y)=>DATA[y].contested_pct>DATA[a].contested_pct?y:a);
+document.getElementById('cards').innerHTML=
+  `<div class="metric a"><div class="n">${totalMotions.toLocaleString()}</div><div class="l">Motions, all years</div><div class="s">${years[0]}–${years[years.length-1]}</div></div>`+
+  `<div class="metric a"><div class="n">${years.length}</div><div class="l">Years covered</div><div class="s">2026 partial</div></div>`+
+  `<div class="metric b"><div class="n">${busiest}</div><div class="l">Busiest year</div><div class="s">${DATA[busiest].motions} motions</div></div>`+
+  `<div class="metric c"><div class="n">${divisive}</div><div class="l">Most divisive year</div><div class="s">${DATA[divisive].contested_pct}% contested</div></div>`;
+
+function barChart(el,vals,labels,opts){
+  const W=900,H=300,padL=44,padB=46,padT=12,n=vals.length;
+  const max=opts.max||Math.max(1,...vals), gap=14, bw=(W-padL-16-gap*(n-1))/n;
+  let s=`<svg viewBox="0 0 ${W} ${H}" role="img" aria-label="${opts.aria||''}">`;
+  // gridlines
+  for(let i=0;i<=4;i++){const gy=padT+(H-padT-padB)*i/4, val=Math.round(max*(1-i/4));
+    s+=`<line x1="${padL}" y1="${gy}" x2="${W-8}" y2="${gy}" stroke="#eef0f3"/>`;
+    s+=`<text x="${padL-8}" y="${gy+4}" text-anchor="end" font-size="11" fill="#9aa0a8">${val}${opts.unit||''}</text>`;}
+  vals.forEach((v,i)=>{
+    const x=padL+i*(bw+gap), h=(H-padT-padB)*(v/max), y=H-padB-h;
+    const part=labels[i]===PARTIAL;
+    s+=`<rect x="${x}" y="${y}" width="${bw}" height="${Math.max(1,h)}" rx="5" fill="${opts.color}" ${part?'opacity="0.5"':''}><title>${labels[i]}: ${v}${opts.unit||''}</title></rect>`;
+    s+=`<text x="${x+bw/2}" y="${y-7}" text-anchor="middle" font-size="12" font-weight="600" fill="#1f2430">${v}${opts.unit||''}</text>`;
+    s+=`<text x="${x+bw/2}" y="${H-padB+18}" text-anchor="middle" font-size="12" fill="#6b7280">${labels[i]}${part?' *':''}</text>`;
+  });
+  s+=`</svg>`;
+  document.getElementById(el).innerHTML=s;
+}
+barChart('motionsChart',years.map(y=>DATA[y].motions),years,{color:'var(--accent)',aria:'Motions per year'});
+barChart('contestedChart',years.map(y=>DATA[y].contested_pct),years,{color:'var(--warm)',unit:'%',max:60,aria:'Contested rate per year'});
+
+document.getElementById('rows').innerHTML=years.map(y=>{const d=DATA[y];
+  return `<tr><td>${y}${y===PARTIAL?'<span class="part">partial</span>':''}</td>
+    <td class="num">${d.meetings}</td><td class="num">${d.motions}</td>
+    <td class="num">${d.per_meeting}</td><td class="num">${d.contested}</td>
+    <td class="num">${d.contested_pct}%</td>
+    <td>${d.top_topics.map(t=>`<span class="topictag">${pretty(t)}</span>`).join('')}</td></tr>`;}).join('');
+
+document.getElementById('foot').innerHTML=
+  `Source: Amherst Town Council Unofficial Record of Votes (amherstma.gov). ${totalMotions.toLocaleString()} distinct motions across ${years.length} years. `+
+  `“Contested” = at least one No vote or abstention recorded. * 2026 is a partial year and is shown at half opacity. `+
+  `Topic labels are automatic keyword tags and are approximate.`;
+</script></body></html>
