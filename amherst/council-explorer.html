@@ -51,7 +51,7 @@ body{margin:0;background:var(--bg);color:var(--ink);font:17px/1.6 var(--f-body)}
 .opt:hover,.opt.sel{border-color:var(--accent);background:var(--accent-soft)}
 .opt .oi{width:42px;height:42px;border-radius:11px;background:var(--accent-soft);color:var(--accent);display:flex;align-items:center;justify-content:center;font-size:23px;flex-shrink:0}
 .opt.sel .oi{background:var(--accent);color:#fff}
-.opt .ot{font-size:18px;font-weight:600}.opt .od{font-size:14px;color:var(--muted);margin-top:1px}
+.opt .ot{display:block;font-size:18px;font-weight:600;line-height:1.25}.opt .od{display:block;font-size:14px;color:var(--muted);margin-top:2px}
 .opt .check{margin-left:auto;color:var(--accent);font-size:24px;opacity:0}.opt.sel .check{opacity:1}
 .rec{margin-left:auto;background:var(--accent);color:#fff;font-size:12px;font-weight:700;padding:3px 11px;border-radius:99px;white-space:nowrap}.opt.sel .rec{display:none}
 .subpick{margin:16px 0 2px;padding:16px 18px;background:var(--bg);border-radius:13px}
@@ -172,17 +172,23 @@ a.pdf{color:var(--accent)}
 .goldband .gs{display:flex;align-items:baseline;gap:11px;padding:11px 0;border-top:1px solid rgba(30,35,40,.22)}
 .goldband .gs b{font-family:var(--f-display);font-size:25px;min-width:60px}
 .goldband .gs span{font-size:14px;font-weight:500}
+.ideas{margin:0 0 26px}
+.ideas-lab{font-family:var(--f-narrow);font-weight:700;font-size:12px;letter-spacing:.1em;text-transform:uppercase;color:var(--muted);margin:0 0 12px}
+.ideas-row{display:flex;flex-wrap:wrap;gap:10px}
+.ichip{font:inherit;font-size:15px;font-weight:500;background:#fff;color:var(--ink);border:1.5px solid var(--ink);border-radius:3px;padding:9px 15px;cursor:pointer;display:inline-flex;align-items:center;gap:7px}
+.ichip:hover{background:var(--accent-soft);border-color:var(--accent);color:var(--accent-d)}
+.ideas-note{font-size:14px;color:var(--muted);margin:15px 0 0}.ideas-note b{color:var(--ink);font-weight:600}
 </style></head><body>
 <div class="shell">
   <div class="masthead">
-    <div class="mh-left"><span class="wordmark">Amherst Council</span><span class="chip">Voting Data</span></div>
+    <div class="mh-left"><span class="wordmark">Amherst Council</span><span class="chip">Council Data</span></div>
     <div class="mh-right">Built by a resident · not affiliated with the town</div>
   </div>
   <div class="rule"></div>
   <div class="brand">
-    <div class="eyebrow">A resident-built tool</div>
-    <h1>Explore the council’s voting record.</h1>
-    <p class="sub">Every figure comes straight from the public record — with a link back to the source document.</p>
+    <div class="eyebrow">A resident-built civic tool</div>
+    <h1>Explore Amherst council data.</h1>
+    <p class="sub">Look up meetings, motions, topics and votes — straight from the public record, with a link back to every source.</p>
   </div>
 
   <div class="delight">
@@ -191,12 +197,10 @@ a.pdf{color:var(--accent)}
   </div>
   <div class="surprise" id="surprise"></div>
 
-  <div class="intro">
-    <p class="intro-t">Two ways to explore the council’s voting record — pick whichever suits you.</p>
-    <div class="intro-paths">
-      <button class="ip" data-go="sec-wz"><span class="ipi"><i class="ti ti-wand"></i></span><span><b>Guide me</b><span class="ipd">Answer a few simple questions</span></span><span class="arr"><i class="ti ti-arrow-down"></i></span></button>
-      <button class="ip" data-go="sec-ex"><span class="ipi"><i class="ti ti-adjustments"></i></span><span><b>Let me explore</b><span class="ipd">Build your own view of the data</span></span><span class="arr"><i class="ti ti-arrow-down"></i></span></button>
-    </div>
+  <div class="ideas">
+    <p class="ideas-lab">Ideas to explore</p>
+    <div class="ideas-row" id="ideas"></div>
+    <p class="ideas-note">Not sure where to start? Answer a few <b>guided questions</b> below, or <b>build your own view</b> in the explorer.</p>
   </div>
 
   <div class="section-label" id="sec-wz"><span class="num">1</span><span>Guided <span class="sd">— answer a few questions</span></span></div>
@@ -374,7 +378,6 @@ const QUESTIONS={
     {id:'voted',t:'How they voted overall',d:'Yes, No, abstained, or absent',icon:'ti-checkup-list',measure:'vote_breakdown',group:'none',viz:['cards','donut','stacked','table'],rec:'cards'},
     {id:'abstain',t:'How often they abstained',d:'Times they did not take a side, by year',icon:'ti-hand-stop',measure:'abstain_count',group:'Year',viz:['line','bar','table'],rec:'line'},
     {id:'pvotes',t:'What topics they vote on',d:'Which subjects they weigh in on most',icon:'ti-tags',measure:'votes_count',group:'Topic',viz:['bar','table'],rec:'bar'},
-    {id:'absent',t:'How often they were absent',d:'Meetings missed, by year',icon:'ti-user-off',measure:'absent_count',group:'Year',viz:['line','bar','table'],rec:'line'},
     {id:'proposed',t:'How often they put motions forward',d:'Motions they proposed, by year',icon:'ti-flag',measure:'motions_proposed',group:'Year',viz:['line','bar','table'],rec:'line'},
   ],
 };
@@ -468,12 +471,16 @@ const GROUPS={ballot:[['Year','By year'],['Councilor','By councilor'],['Topic','
 const EX_VIZ=[['auto','Auto'],['bar','Bar'],['stacked','Stacked'],['line','Line'],['donut','Pie'],['table','Table']];
 let ex={measure:'vote_breakdown',group:'Year',chart:'auto',councilor:'__all',topic:''};
 function exGroups(){const m=MEAS[ex.measure];if(m.kind==='breakdown')return GROUPS.ballot_b;if(m.grain==='move'||m.grain==='sec')return GROUPS.sponsor;return m.grain==='motion'?GROUPS.motion:GROUPS.ballot;}
+function exViz(){return MEAS[ex.measure].kind==='breakdown'
+  ?[['auto','Auto'],['stacked','Stacked'],['donut','Pie'],['table','Table']]
+  :[['auto','Auto'],['bar','Bar'],['line','Line'],['table','Table']];}
 function renderExpert(){
   const gops=exGroups();if(!gops.some(o=>o[0]===ex.group))ex.group=gops[0][0];
+  const vopts=exViz();if(!vopts.some(o=>o[0]===ex.chart))ex.chart='auto';
   EX.innerHTML=`<div class="ctlbar">
       <div class="ctl grow"><label>What to measure</label><select id="ex-m">${EX_MEAS.map(([v,l])=>`<option value="${v}" ${v===ex.measure?'selected':''}>${l}</option>`).join('')}</select></div>
       <div class="ctl"><label>Break down</label><select id="ex-g">${gops.map(([v,l])=>`<option value="${v}" ${v===ex.group?'selected':''}>${l}</option>`).join('')}</select></div>
-      <div class="ctl"><label>Chart</label><div class="seg" id="ex-v">${EX_VIZ.map(([v,l])=>`<button data-v="${v}" class="${ex.chart===v?'on':''}">${l}</button>`).join('')}</div></div>
+      <div class="ctl"><label>Chart</label><div class="seg" id="ex-v">${vopts.map(([v,l])=>`<button data-v="${v}" class="${ex.chart===v?'on':''}">${l}</button>`).join('')}</div></div>
     </div>
     <div class="ctlbar" style="margin-top:14px">
       <div class="ctl grow"><label>Councilor</label><select id="ex-c"><option value="__all" ${ex.councilor==='__all'?'selected':''}>All councilors</option>${councilors.map(n=>`<option ${n===ex.councilor?'selected':''}>${n}</option>`).join('')}</select></div>
@@ -532,8 +539,6 @@ if(closest)FACTS.push({k:'Closest vote on record',n:closest.m.tl,line:`The counc
 if(busiest)FACTS.push({k:'Busiest year',n:busiest[1],line:`The council voted on more decisions in <b>${busiest[0]}</b> than any other year.`,sub:`${busiest[1]} decisions`});
 FACTS.push({k:'How often they agree',n:Math.round(100*(M.length-contestedAll)/M.length)+'%',line:`Most council decisions are unanimous.`,sub:`${Math.round(100*contestedAll/M.length)}% were contested`});
 if(topProp)FACTS.push({k:'Most motions put forward',n:topProp[1],line:`<b>${topProp[0]}</b> has put forward more motions than anyone — often as council president.`,sub:`${topProp[1]} motions`});
-if(mostNo)FACTS.push({k:'Most likely to vote no',n:Math.round(100*mostNo[1].no/mostNo[1].t)+'%',line:`<b>${mostNo[0]}</b> votes “no” more often than any other councilor.`,sub:`${mostNo[1].no} of ${mostNo[1].t} votes`});
-if(mostAb)FACTS.push({k:'Most likely to abstain',n:Math.round(100*mostAb[1].ab/mostAb[1].t)+'%',line:`<b>${mostAb[0]}</b> abstains more often than any other councilor.`,sub:`${mostAb[1].ab} of ${mostAb[1].t} votes`});
 if(topTopic)FACTS.push({k:'Most-voted topic',n:topTopic[1],line:`<b>${pretty(topTopic[0])}</b> comes up more than any other subject.`,sub:`${topTopic[1]} motions`});
 
 let lastFact=-1;
@@ -568,8 +573,7 @@ const SLIDES=[{kicker:`Amherst Council — ${YI.yr} so far`,num:YI.dec,line:'dec
 if(YI.latest)SLIDES.push({kicker:'Most recent decision',nonum:true,num:'',line:`“${esc(YI.latest.m.slice(0,72))}…”`,sub:fmtDate(YI.latest.d),s:YI.latest.s});
 if(YI.dec)SLIDES.push({kicker:'Agreement so far',num:Math.round(100*(YI.dec-YI.contested)/YI.dec),suf:'%',line:'of decisions were unanimous',sub:`${Math.round(100*YI.contested/YI.dec)}% saw the council split`});
 if(YI.closest)SLIDES.push({kicker:'Closest vote so far',num:YI.closest.m.tl,line:`“${esc(YI.closest.m.m.slice(0,68))}…”`,sub:fmtDate(YI.closest.m.d),s:YI.closest.m.s});
-if(YI.topProp)SLIDES.push({kicker:'Most motions put forward',num:YI.topProp[1],line:`put forward by ${YI.topProp[0]}`,sub:`so far in ${YI.yr}`});
-if(YI.mostNo)SLIDES.push({kicker:'Most independent voice',num:Math.round(100*YI.mostNo[1].no/YI.mostNo[1].t),suf:'%',line:`of ${YI.mostNo[0]}’s votes were “no”`,sub:`the highest so far this year`});
+if(YI.topProp)SLIDES.push({kicker:'Most motions put forward',num:YI.topProp[1],line:`put forward by ${YI.topProp[0]}`,sub:`often as council president`});
 if(YI.topTopic)SLIDES.push({kicker:'Most-voted topic',num:YI.topTopic[1],line:`motions about ${pretty(YI.topTopic[0])}`,sub:`${YI.yr}’s most frequent subject`});
 SLIDES.push({kicker:'Your turn',num:'→',line:'Now explore the full record',sub:'Every year, not just this one — dive in below',outro:true});
 
@@ -597,6 +601,21 @@ function closeWrapped(){$('wrapOverlay').classList.remove('show');}
 $('wrappedBtn').innerHTML=`<i class="ti ti-player-play"></i> Watch: Amherst Council ${LATEST_YEAR} so far`;
 $('wrappedBtn').onclick=openWrapped;
 $('surpriseBtn').onclick=showSurprise;
+
+const IDEAS=[
+  {t:'Voting records',m:'vote_breakdown',g:'Year',c:'__all',tp:''},
+  {t:'Topics & subjects',m:'motions_count',g:'Topic',c:'__all',tp:''},
+  {t:'Meeting activity by year',m:'motions_count',g:'Year',c:'__all',tp:''},
+  {t:'Motions & who proposes them',m:'motions_proposed',g:'Councilor',c:'__all',tp:''},
+  {t:'The Jones Library',m:'motions_count',g:'Year',c:'__all',tp:'jones-library'},
+  {t:'Look up a councilor',guided:true},
+];
+function applyIdea(i){const x=IDEAS[i];
+  if(x.guided){$('sec-wz').scrollIntoView({behavior:'smooth',block:'start'});return;}
+  ex.measure=x.m;const g=exGroups();ex.group=g.some(o=>o[0]===x.g)?x.g:g[0][0];ex.councilor=x.c;ex.topic=x.tp;ex.chart='auto';
+  renderExpert();$('sec-ex').scrollIntoView({behavior:'smooth',block:'start'});}
+if($('ideas')){$('ideas').innerHTML=IDEAS.map((x,i)=>`<button class="ichip" data-i="${i}">${x.t} <i class="ti ti-arrow-right" style="font-size:15px;vertical-align:-2px"></i></button>`).join('');
+  $('ideas').querySelectorAll('.ichip').forEach(b=>b.onclick=()=>applyIdea(+b.dataset.i));}
 $('wrapOverlay').onclick=e=>{if(e.target===$('wrapOverlay'))closeWrapped();};
 document.addEventListener('keydown',e=>{if(e.key==='Escape')closeWrapped();});
 
