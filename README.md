@@ -39,7 +39,6 @@ If you're the Town Clerk and something here looks wrong, please open an issue.
 Code (scraper, ingestion pipeline) is licensed under GNU General Public License v3.0. 
 See LICENSE for details.
 
-The ingested corpus of municipal meeting records is licensed under Creative Commons 
-Attribution 4.0 International (CC BY 4.0). See CORPUS-LICENSE for details.
+The ingested corpus of municipal meeting records is publicly available.
 
 Copyright (c) 2026 CivicSense, Inc.
