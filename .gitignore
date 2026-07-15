@@ -28,3 +28,40 @@ Thumbs.db
 # Personal workspace — kanban, learnings, drafts, fundraising, skills, etc.
 # Everything inside is intentionally outside the public corpus repo.
 _workspace/
+
+# Internal AIMS governance portfolio and red-team materials — keep OUT of the
+# public corpus repo (they contain internal assessments and secrets). Force-add
+# specific files with "git add -f" only if you deliberately intend to publish them.
+governance/
+redteam/
+
+# transient explorer build (deployed to the private app repo, not committed here)
+build/
+eval/qa-report.html
+
+# ============================================================================
+# Personal / business files — NEVER publish to the public corpus repo.
+# Fundraising, grant applications, nonprofit filings, resume, internal notes.
+# (Belt-and-braces: also use explicit `git add <path>`, never `git add -A`.)
+# ============================================================================
+grant applications/
+civicsense-site/
+*.xlsx
+*.csv
+1023-ez-filing-walkthrough.md
+501c3-purpose-clause-drafts.md
+application_briefs.md
+apply_now_checklist.md
+apply_on_your_own_checklist.md
+funding_roadmap.md
+goodstack_triage.md
+nonprofit-status-and-funding-notes.md
+umass_partnership_guide.md
+resume-portfolio-entry.md
+replit-prompt-auditor-summary.md
+replit-prompt-release-tagging.md
+gpt-oss-eval-plan.md
+braintrust-evidence-export-prompt.md
+braintrust-summary.yml
+summarize_braintrust_evidence.py
+verify_braintrust_evidence.py

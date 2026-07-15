@@ -23,8 +23,28 @@ cd "$(dirname "$0")"
 
 echo "=== $(date -u +%Y-%m-%dT%H:%M:%SZ) daily_update starting ==="
 
+# 0. Clear a stale git index lock. Git writes .git/index.lock while
+#    modifying the index and removes it when done; a crashed git
+#    process leaves it orphaned, and every later git command then
+#    fails with "Unable to create index.lock". Because this script
+#    runs `set -e`, that would abort before the ingest step and
+#    silently freeze the chat-app corpus. Only remove the lock if no
+#    git process is actually running, so we never clobber a live one.
+if [ -f .git/index.lock ] && ! pgrep -x git >/dev/null 2>&1; then
+    echo "WARNING: removing stale .git/index.lock (no git process running)"
+    rm -f .git/index.lock
+fi
+
 # 1. Scrape.
 python3 scrape_amherst_minutes.py
+
+# 1b. Rebuild the structured vote dataset (amherst/votes.json) from the freshly
+#     scraped markdown. This is what the public explorer + its CI build from.
+#     Kept NON-FATAL on purpose: a bug here must never block the corpus push or
+#     the ingest (the freeze lesson). If it fails, votes.json is at most a day
+#     stale and the markdown still ships. votes.json is deterministic, so on
+#     no-new-document days it produces no diff and nothing extra is pushed.
+python3 build_votes_dataset.py || echo "WARNING: votes.json rebuild failed — corpus push continues."
 
 # 2. Commit and push if there are corpus changes. We stage amherst/
 #    first and then check whether anything actually got staged — this

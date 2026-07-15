@@ -1,0 +1,120 @@
+- vars:
+    motion: "To amend the Town Council Rules of Procedure by adding item 6.2(d): “Those present shall not engage in audible demonstrations of approval or disapproval.”"
+    expected: "rules-procedure"
+  assert:
+    - type: llm-rubric
+      value: >-
+        The output should tag this motion with the topics that genuinely apply.
+        A human reviewer labelled it: rules-procedure. Pass if the output
+        captures those subject(s) and does not add clearly-unrelated tags;
+        minor differences in wording are fine.
+- vars:
+    motion: "To refer Planning Board appointments back to the OCA Committee."
+    expected: "appointments"
+  assert:
+    - type: llm-rubric
+      value: >-
+        The output should tag this motion with the topics that genuinely apply.
+        A human reviewer labelled it: appointments. Pass if the output
+        captures those subject(s) and does not add clearly-unrelated tags;
+        minor differences in wording are fine.
+- vars:
+    motion: "To adopt the LGBTQ Pride Month Proclamation as presented."
+    expected: "resolution"
+  assert:
+    - type: llm-rubric
+      value: >-
+        The output should tag this motion with the topics that genuinely apply.
+        A human reviewer labelled it: resolution. Pass if the output
+        captures those subject(s) and does not add clearly-unrelated tags;
+        minor differences in wording are fine.
+- vars:
+    motion: "“I move that the Town Council approve the Amherst-Pelham Regional School District operating and capital budget of $32,167,342 and that the Town raise and appropriate $16,444,279 as its share of that budget.”"
+    expected: "schools, budget-appropriation"
+  assert:
+    - type: llm-rubric
+      value: >-
+        The output should tag this motion with the topics that genuinely apply.
+        A human reviewer labelled it: schools, budget-appropriation. Pass if the output
+        captures those subject(s) and does not add clearly-unrelated tags;
+        minor differences in wording are fine.
+- vars:
+    motion: "To support the letter in support of the 100% Renewable Energy Act, as presented."
+    expected: "climate-energy"
+  assert:
+    - type: llm-rubric
+      value: >-
+        The output should tag this motion with the topics that genuinely apply.
+        A human reviewer labelled it: climate-energy. Pass if the output
+        captures those subject(s) and does not add clearly-unrelated tags;
+        minor differences in wording are fine.
+- vars:
+    motion: "To adopt Appropriation and Transfer Order FY20-25, \"An Order Appropriating Funds for New School Bus\" as recommended by the Finance Committee report dated September 6, 2019."
+    expected: "budget-appropriation"
+  assert:
+    - type: llm-rubric
+      value: >-
+        The output should tag this motion with the topics that genuinely apply.
+        A human reviewer labelled it: budget-appropriation. Pass if the output
+        captures those subject(s) and does not add clearly-unrelated tags;
+        minor differences in wording are fine.
+- vars:
+    motion: "To refer a potential Town Council policy on zoning bylaw hearings to the Governance, Organization, and Legislation Committee, with a report to the Town Council on October 21, 2019."
+    expected: "zoning"
+  assert:
+    - type: llm-rubric
+      value: >-
+        The output should tag this motion with the topics that genuinely apply.
+        A human reviewer labelled it: zoning. Pass if the output
+        captures those subject(s) and does not add clearly-unrelated tags;
+        minor differences in wording are fine.
+- vars:
+    motion: "To amend the Proclamation in Support of Goodwin Memorial African Methodist Episcopal Zion Church Restoration to include reference to 2015 Town Meeting vote to appropriate CPA funds to the church."
+    expected: "budget-appropriation, cpa, resolution"
+  assert:
+    - type: llm-rubric
+      value: >-
+        The output should tag this motion with the topics that genuinely apply.
+        A human reviewer labelled it: budget-appropriation, cpa, resolution. Pass if the output
+        captures those subject(s) and does not add clearly-unrelated tags;
+        minor differences in wording are fine.
+- vars:
+    motion: "To recommend the Town Manager appoint under Charter Section 3.3 (c) Councilor Sarah Swartz to the Energy and Climate Action Committee."
+    expected: "appointments, climate-energy"
+  assert:
+    - type: llm-rubric
+      value: >-
+        The output should tag this motion with the topics that genuinely apply.
+        A human reviewer labelled it: appointments, climate-energy. Pass if the output
+        captures those subject(s) and does not add clearly-unrelated tags;
+        minor differences in wording are fine.
+- vars:
+    motion: "to suspend Town Council Rules of Procedure rule 8.6 for the Resolution in the Aftermath of the Death of Mr. George Floyd."
+    expected: "rules-procedure, resolution"
+  assert:
+    - type: llm-rubric
+      value: >-
+        The output should tag this motion with the topics that genuinely apply.
+        A human reviewer labelled it: rules-procedure, resolution. Pass if the output
+        captures those subject(s) and does not add clearly-unrelated tags;
+        minor differences in wording are fine.
+- vars:
+    motion: "To amend the motion to refer #2 back to OCA but to approve #1, 3, and 4."
+    expected: "none"
+  assert:
+    - type: llm-rubric
+      value: >-
+        The output should tag this motion with the topics that genuinely apply.
+        A human reviewer labelled it: none. Pass if the output
+        captures those subject(s) and does not add clearly-unrelated tags;
+        minor differences in wording are fine.
+- vars:
+    motion: "To refer the discussion regarding associate members as stated in the current Planning Board charge to the OCA Committee."
+    expected: "none"
+  assert:
+    - type: llm-rubric
+      value: >-
+        The output should tag this motion with the topics that genuinely apply.
+        A human reviewer labelled it: none. Pass if the output
+        captures those subject(s) and does not add clearly-unrelated tags;
+        minor differences in wording are fine.

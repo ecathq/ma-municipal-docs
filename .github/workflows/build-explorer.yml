@@ -1,0 +1,67 @@
+name: Build & deploy explorer
+
+# Open-source build (this public repo) → controlled deploy (private app repo).
+# When the daily scrape updates votes.json, rebuild the static explorer, gate it
+# on QA, and push the built page into ecathq/ma-municipal-chat at
+# explorer/index.html. Replit serves it at askmytown.org/explore. Nothing
+# production-looking is committed to this public repo.
+#
+# One-time setup: add a repo secret CHAT_REPO_TOKEN — a fine-grained PAT with
+# Contents: read/write on ecathq/ma-municipal-chat.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "amherst/votes.json"
+      - "explorer/explorer.template.html"
+      - "explorer/build_explorer.py"
+  workflow_dispatch: {}
+
+permissions:
+  contents: read
+
+concurrency:
+  group: build-explorer
+  cancel-in-progress: true
+
+jobs:
+  build-and-deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - uses: actions/setup-node@v4
+        with: { node-version: "20" }
+
+      - name: Rebuild explorer from latest votes.json
+        run: python3 explorer/build_explorer.py
+
+      # Gate: don't deploy a page that doesn't reconcile or doesn't match the data.
+      - name: QA gate (data invariants + page logic)
+        run: |
+          python3 validate_votes.py
+          node eval/test_page.js
+
+      - name: Push built page into the private app repo
+        env:
+          TOKEN: ${{ secrets.CHAT_REPO_TOKEN }}
+        run: |
+          if [ -z "$TOKEN" ]; then
+            echo "CHAT_REPO_TOKEN not set — skipping deploy. Add the secret to enable."
+            exit 0
+          fi
+          git clone --depth 1 "https://x-access-token:${TOKEN}@github.com/ecathq/ma-municipal-chat.git" app
+          mkdir -p app/explorer
+          cp build/index.html app/explorer/index.html
+          cd app
+          if git diff --quiet -- explorer/index.html; then
+            echo "No change to explorer/index.html — nothing to deploy."
+            exit 0
+          fi
+          git config user.name  "askmytown-bot"
+          git config user.email "bot@askmytown.org"
+          git add explorer/index.html
+          git commit -m "Update explorer from ma-municipal-docs (auto-build)"
+          git push
