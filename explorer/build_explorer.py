@@ -13,7 +13,7 @@ import json, os
 ROOT = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 TPL = os.path.join(ROOT, "explorer", "explorer.template.html")
 VOTES = os.path.join(ROOT, "amherst", "votes.json")
-OUT = os.path.join(ROOT, "build", "index.html")   # transient; pushed to the app repo by CI
+OUT = os.path.join(ROOT, "explorer", "index.html")   # committed public artifact; the app pulls this
 
 def main():
     d = json.load(open(VOTES, encoding="utf-8"))

@@ -98,16 +98,19 @@ LLM-as-judge check for the (fuzzy) topic tags.
 
 ## How it's deployed
 
-Build in the open here, deploy to the controlled app:
+Build in the open here, pull into the controlled app (token-free — no cross-repo
+secret lives in this public repo):
 
 1. The daily job rebuilds `votes.json` and pushes it to this repo.
 2. `.github/workflows/build-explorer.yml` rebuilds the explorer, gates it on the
-   QA checks, and pushes the built page into the private app repo.
-3. The app serves it at **askmytown.org/explore**.
+   QA checks, and commits the built `explorer/index.html` back to *this* repo
+   (open artifact, built from public data) using the built-in `GITHUB_TOKEN`.
+3. The app (`ma-municipal-chat`) pulls that public file and serves it at
+   **askmytown.org/explore**.
 
-So this public repo is the source of *how the page is made*; the page that's
-actually served is controlled inside the app. Anyone can reproduce the exact page
-from this repo with the three build commands above.
+So this public repo is the source of *how the page is made* and holds no
+credentials; the page that's actually served is controlled inside the app.
+Anyone can reproduce the exact page from this repo with the build commands above.
 
 ## Source
 

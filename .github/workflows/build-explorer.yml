@@ -1,13 +1,11 @@
-name: Build & deploy explorer
+name: Build & publish explorer
 
-# Open-source build (this public repo) → controlled deploy (private app repo).
-# When the daily scrape updates votes.json, rebuild the static explorer, gate it
-# on QA, and push the built page into ecathq/ma-municipal-chat at
-# explorer/index.html. Replit serves it at askmytown.org/explore. Nothing
-# production-looking is committed to this public repo.
-#
-# One-time setup: add a repo secret CHAT_REPO_TOKEN — a fine-grained PAT with
-# Contents: read/write on ecathq/ma-municipal-chat.
+# Token-free build & publish (reverse-flow).
+# When votes.json (or the template/build script) changes, rebuild the explorer,
+# gate it on QA, and commit the built page — explorer/index.html — back to THIS
+# public repo using the built-in GITHUB_TOKEN. There is NO cross-repo secret.
+# The app (ma-municipal-chat) pulls that public file itself (see DEPLOY.md), so
+# no credential ever lives in this public repo.
 
 on:
   push:
@@ -16,17 +14,18 @@ on:
       - "amherst/votes.json"
       - "explorer/explorer.template.html"
       - "explorer/build_explorer.py"
+      - ".github/workflows/build-explorer.yml"
   workflow_dispatch: {}
 
 permissions:
-  contents: read
+  contents: write        # only this repo; GITHUB_TOKEN can't reach any other repo
 
 concurrency:
   group: build-explorer
   cancel-in-progress: true
 
 jobs:
-  build-and-deploy:
+  build:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
@@ -38,30 +37,23 @@ jobs:
       - name: Rebuild explorer from latest votes.json
         run: python3 explorer/build_explorer.py
 
-      # Gate: don't deploy a page that doesn't reconcile or doesn't match the data.
+      # Gate: don't publish a page that doesn't reconcile or doesn't match the data.
       - name: QA gate (data invariants + page logic)
         run: |
           python3 validate_votes.py
           node eval/test_page.js
 
-      - name: Push built page into the private app repo
-        env:
-          TOKEN: ${{ secrets.CHAT_REPO_TOKEN }}
+      - name: Commit the built page (only if it changed)
         run: |
-          if [ -z "$TOKEN" ]; then
-            echo "CHAT_REPO_TOKEN not set — skipping deploy. Add the secret to enable."
-            exit 0
-          fi
-          git clone --depth 1 "https://x-access-token:${TOKEN}@github.com/ecathq/ma-municipal-chat.git" app
-          mkdir -p app/explorer
-          cp build/index.html app/explorer/index.html
-          cd app
           if git diff --quiet -- explorer/index.html; then
-            echo "No change to explorer/index.html — nothing to deploy."
+            echo "No change to explorer/index.html — nothing to publish."
             exit 0
           fi
-          git config user.name  "askmytown-bot"
-          git config user.email "bot@askmytown.org"
+          git config user.name  "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
           git add explorer/index.html
-          git commit -m "Update explorer from ma-municipal-docs (auto-build)"
+          git commit -m "Rebuild explorer from latest votes.json [skip ci]"
           git push
+# The commit above uses the default GITHUB_TOKEN, whose pushes do NOT trigger
+# further workflow runs (GitHub loop-prevention) — and explorer/index.html isn't
+# in the trigger paths anyway. So this can't loop.

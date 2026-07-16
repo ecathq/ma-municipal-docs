@@ -17,7 +17,7 @@ const path = require("path");
 const ROOT = path.join(__dirname, "..");
 
 const vj = JSON.parse(fs.readFileSync(path.join(ROOT, "amherst/votes.json"), "utf8"));
-const html = fs.readFileSync(path.join(ROOT, "build/index.html"), "utf8");
+const html = fs.readFileSync(path.join(ROOT, "explorer/index.html"), "utf8");
 const script = html.match(/<script>([\s\S]*)<\/script>/)[1];
 
 /* ---------- independent expectations, computed straight from votes.json ---------- */
