@@ -65,3 +65,6 @@ braintrust-evidence-export-prompt.md
 braintrust-summary.yml
 summarize_braintrust_evidence.py
 verify_braintrust_evidence.py
+
+# staging area for the open-source engine repo (push separately, not part of the corpus)
+council-data-explorer/
