@@ -1,10 +1,10 @@
 {
   "meta": {
-    "newest_meeting": "2026-06-15",
-    "source_files": 184,
-    "total_records": 7834,
+    "newest_meeting": "2026-07-20",
+    "source_files": 185,
+    "total_records": 7837,
     "attributable_ballots": 6591,
-    "non_attributable_motions": 1243,
+    "non_attributable_motions": 1246,
     "grain": "one councilor's vote on one motion",
     "vote_values": [
       "yes",
@@ -120138,6 +120138,53 @@
       "source_pdf": "https://www.amherstma.gov/Archive.aspx?ADID=19158",
       "mover": "Hanneke",
       "seconder": "Schoen"
+    },
+    {
+      "councilor": null,
+      "vote": null,
+      "date": "2026-07-20",
+      "meeting_adid": 19272,
+      "motion_id": "2026-07-20-adid19272-m1",
+      "motion_text": "To move the following items, and the printed motions thereunder and approve those items as a single unit:  08.b. Referral of Financial Orders to Finance Committee  08.c. Approval of the September 1, 2026 State Primary Election Warrant  08.d. Approval of Amendment to Agricultural Preservation Restriction  09.a.1-8. Approval of Town Manager appointments and reappointments  11.a. Approval of Minutes: o June 15, 2026 Regular Meeting",
+      "topic_tags": [
+        "appointments"
+      ],
+      "tally": null,
+      "vote_method": "non_attributable",
+      "source_pdf": "https://www.amherstma.gov/Archive.aspx?ADID=19272",
+      "mover": "Walker",
+      "seconder": "Schoen"
+    },
+    {
+      "councilor": null,
+      "vote": null,
+      "date": "2026-07-20",
+      "meeting_adid": 19272,
+      "motion_id": "2026-07-20-adid19272-m2",
+      "motion_text": "Having been referred to the Finance Committee on June 15, 2026, having held a Public Hearing on July 20, 2026, and Finance Committee submitted a recommendation to the Town Council on June 23, 2026, to approve Appropriation and Transfer Order FY27-07B, an Order Appropriating the FY2027 Community Preservation Act Budget as required under M.G.L. Chapter 44B – Goodwin Memorial Church Preservation, as shown on page 11 of the motions sheet.",
+      "topic_tags": [
+        "budget-appropriation",
+        "cpa"
+      ],
+      "tally": null,
+      "vote_method": "non_attributable",
+      "source_pdf": "https://www.amherstma.gov/Archive.aspx?ADID=19272",
+      "mover": "Walker",
+      "seconder": "Hanneke"
+    },
+    {
+      "councilor": null,
+      "vote": null,
+      "date": "2026-07-20",
+      "meeting_adid": 19272,
+      "motion_id": "2026-07-20-adid19272-m3",
+      "motion_text": "To adjourn at 8:10 p.m.",
+      "topic_tags": [],
+      "tally": "07-20",
+      "vote_method": "non_attributable",
+      "source_pdf": "https://www.amherstma.gov/Archive.aspx?ADID=19272",
+      "mover": "Walker",
+      "seconder": "Hanneke"
     }
   ]
 }
